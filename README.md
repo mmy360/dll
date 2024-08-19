@@ -1,5 +1,4 @@
-下面是添加了“是否实现”列的表格：
-
+# CV
 | **实现** | **模型名称**          | **会议/年份**                      | **论文标题**                                                        | **作者**                                                         | **链接**                                                   | **关键贡献**                                                 |
 |----------|----------------------|---------------------------------|-------------------------------------------------------------------|------------------------------------------------------------------|-------------------------------------------------------------|------------------------------------------------------------|
 | ✅        | **LeNet-5**          | IEEE 1998                      | Gradient-Based Learning Applied to Document Recognition            | Yann LeCun, Léon Bottou, Yoshua Bengio, Patrick Haffner           | [Link](http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf)  | 开创了使用卷积神经网络（CNN）进行手写数字识别。                |
@@ -14,4 +13,5 @@
 |          | **Vision Transformers (ViT)** | NeurIPS 2020          | An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale | Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov       | [Link](https://arxiv.org/pdf/2010.11929.pdf)                | 将transformer应用于图像分类任务，打破了传统CNN的限制。             |
 |          | **Swin Transformer** | CVPR 2021                      | Swin Transformer: Hierarchical Vision Transformer using Shifted Windows | Ze Liu, Yutong Lin, Yue Cao, Han Hu, and others            | [Link](https://arxiv.org/pdf/2103.14030.pdf)                | 通过使用平移窗口的层次结构Vision Transformer改进了精度和效率。         |
 
-这个表格在前面添加了“实现”列，用来标记哪些模型已经被实现了。
+
+# NLP
