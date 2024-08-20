@@ -1,3 +1,17 @@
+# Introduction
+```mermaid
+graph TD
+    A[Input Data] --> B[Forward Pass]
+    B --> C[Model Output]
+    C --> D[Compute Loss]
+    D --> E[Backpropagation]
+    E --> F[Calculate Gradients]
+    F --> G[Update Parameters]
+    G --> B
+    D -->|Loss Value| E
+
+```
+
 # CV
 | **Impl** | **Abbreviation**          | **Conference/Year**                      | **Paper Title**                                                        | **Author**                                                         | **Link**                                                   | **Contribution**                                                 |
 |----------|----------------------|---------------------------------|-------------------------------------------------------------------|------------------------------------------------------------------|-------------------------------------------------------------|------------------------------------------------------------|
