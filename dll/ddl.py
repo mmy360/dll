@@ -671,3 +671,30 @@ class TransformerDecoder():
     @property
     def attention_weights(self):
         return self._attention_weights
+    
+
+
+class BERTModel(nn.Module):
+    def __init__(self, vocab_size, embed_size, num_heads, num_layers, hidden_size, max_len, dropout = 0.1):
+        super(BERTModel, self).__init__()
+        self.embedding = nn.Embedding(vocab_size, embed_size)
+        self.position_embedding = nn.Embeding(max_len, embed_size)
+        self.dropout = nn.Dropout(dropout)
+        self.layers = nn.ModuleList([
+            TransformerEncoderBlock(embed_size, num_heads, hidden_size, dropout) for _ in range(num_layers)
+        ])
+        self.fc_out = nn.Linear(embed_size, embed_size)
+
+
+    def forward(self, x, mask):
+        N, seq_len = x.shape
+        positions = torch.arange(0, seq_len).unsqueeze(0).to(x.device)
+        
+        x = self.embedding(x) + self.position_embedding(positions)
+        x = self.dropout(x)
+        
+        for layer in self.layers:
+            x = layer(x, mask)
+        
+        x = self.fc_out(x)
+        return x
