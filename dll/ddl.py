@@ -698,3 +698,92 @@ class BERTModel(nn.Module):
         
         x = self.fc_out(x)
         return x
+    
+
+import torch
+import tqdm
+import time
+import wandb
+
+def fit(model=None, train_loader=None, valid_loader=None, optimizer=None, scheduler=None,
+        num_epochs=50, verbose=True):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
+    model.to(device)
+    
+    if optimizer is None:
+        optim = torch.optim.Adam(model.parameters(), lr=0.001)
+    else:
+        optim = optimizer
+
+    # Initialize WandB
+    wandb.init(project="your_project_name", config={
+        "learning_rate": 0.001,
+        "epochs": num_epochs,
+        "batch_size": train_loader.batch_size
+    })
+    
+    # Log model architecture
+    wandb.watch(model, log="all")
+
+    # Initialize history dictionary
+    history = {'val_loss': [], 'val_acc': [], 'train_loss': [], 'train_acc': []}
+
+    for epoch in tqdm.tqdm(range(num_epochs), desc="Training Epochs"):
+        start = time.time()
+        model.train()
+        
+        # Training loop
+        train_loss_sum = 0
+        train_corrects = 0
+        total_train_samples = 0
+        
+        for (X, y) in train_loader:
+            X, y = X.to(device), y.to(device)
+            optim.zero_grad()
+            outputs = model(X.type(torch.float32))
+            loss = loss_fn(outputs, y.type(torch.long))
+            loss.backward()
+            optim.step()
+            if scheduler:
+                scheduler.step()
+            
+            # Accumulate training loss
+            train_loss_sum += loss.item() * X.size(0)
+            _, preds = torch.max(outputs, 1)
+            train_corrects += torch.sum(preds == y).item()
+            total_train_samples += X.size(0)
+        
+        # Compute training loss and accuracy
+        train_loss = train_loss_sum / total_train_samples
+        train_acc = train_corrects / total_train_samples
+        
+        # Compute validation loss and accuracy
+        val_loss, val_acc = compute_loss_and_acc(model, loss_fn, valid_loader)
+
+        history['train_loss'].append(train_loss)
+        history['train_acc'].append(train_acc)
+        history['val_loss'].append(val_loss)
+        history['val_acc'].append(val_acc)
+        
+        end = time.time()
+        
+        # Log metrics to WandB
+        wandb.log({
+            "train_loss": train_loss,
+            "train_acc": train_acc,
+            "val_loss": val_loss,
+            "val_acc": val_acc,
+            "epoch": epoch + 1
+        })
+        
+        if verbose:  # Only print if verbose is True
+            print(f"Epoch {epoch+1}/{num_epochs}")
+            print(f"train loss= {train_loss:.4f} - train acc= {train_acc*100:.2f}% - "
+                  f"valid loss= {val_loss:.4f} - valid acc= {val_acc*100:.2f}%")
+            print(f"total time for epoch {end - start:.2f} seconds")  # time in seconds
+
+    # Finish WandB run
+    wandb.finish()
+
+    return history
